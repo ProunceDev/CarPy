@@ -17,6 +17,9 @@ class Backup_Camera(App):
 		if not self.camera.isOpened():
 			print("Error: Camera not found.")
 			self.camera = None
+		else:
+			self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 800)
+			self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
 
 	def tick(self, events: list[pygame.event.Event]) -> pygame.Surface:
 		"""
@@ -28,8 +31,12 @@ class Backup_Camera(App):
 			if ret:
 				# Convert the frame to RGB format
 				frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+
+				frame = cv2.rotate(frame, cv2.ROTATE_90_COUNTERCLOCKWISE)
+				frame = cv2.flip(frame, 0)  # Flip horizontally
+
 				# Convert the frame to a pygame surface
-				frame = cv2.resize(frame, (self.width, self.height))
+				frame = cv2.resize(frame, (self.height, self.width))
 				frame = pygame.surfarray.make_surface(frame)
 				self.surface.blit(frame, (0, 0))
 			else:

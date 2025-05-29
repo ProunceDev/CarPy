@@ -14,7 +14,7 @@ class Render:
 
 	def initialize(self):
 		pygame.init()
-		self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
+		self.screen = pygame.display.set_mode((self.width, self.height))#, pygame.FULLSCREEN)
 		pygame.display.set_caption(self.title)
 		self.clock = pygame.time.Clock()
 

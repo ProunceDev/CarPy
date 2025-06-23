@@ -20,6 +20,9 @@ class Backup_Camera(App):
 		else:
 			self.camera.set(cv2.CAP_PROP_FRAME_WIDTH, 800)
 			self.camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
+			
+			# Read a frame from the camera to initialize it
+			self.camera.read()
 
 	def tick(self, events: list[pygame.event.Event]) -> pygame.Surface:
 		"""

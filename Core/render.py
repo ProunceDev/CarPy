@@ -14,9 +14,20 @@ class Render:
 
 	def initialize(self):
 		pygame.init()
-		self.screen = pygame.display.set_mode((self.width, self.height))#, pygame.FULLSCREEN)
 		pygame.display.set_caption(self.title)
+		if self.is_raspberry_pi():
+			self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
+			pygame.mouse.set_visible(False)
+		else:
+			self.screen = pygame.display.set_mode((self.width, self.height))
+
 		self.clock = pygame.time.Clock()
+		self.screen.fill((0, 0, 0))
+		font = pygame.font.Font(None, 36)
+		text = font.render("Initializing", True, (255, 255, 255))
+		text_rect = text.get_rect(center=(self.width // 2, self.height // 2))
+		self.screen.blit(text, text_rect)
+		pygame.display.flip()
 
 	def tick(self) -> bool:
 		events = pygame.event.get()
@@ -91,3 +102,14 @@ class Render:
 
 	def quit(self):
 		pygame.quit()
+
+	def is_raspberry_pi(self) -> bool:
+		"""
+		Returns true if script is run on a raspberry pi.
+		"""
+		try:
+			with open("/proc/cpuinfo", "r") as f:
+				cpuinfo = f.read()
+			return "Raspberry Pi" in cpuinfo or "BCM" in cpuinfo
+		except FileNotFoundError:
+			return False

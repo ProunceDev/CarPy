@@ -81,10 +81,16 @@ class Render:
 						self.active_app_id = "main_menu"
 						break
 
+			
+			# draw on the screen the event type		
+			font = pygame.font.Font(None, 24)
+			event_text = font.render(f"Event: {pygame.event.event_name(event.type)}", True, (255, 255, 255))
+			event_text_rect = event_text.get_rect(topleft=(10, 10 + 20 * events.index(event)))
+			self.screen.blit(event_text, event_text_rect)	
 
 		pygame.display.flip()
 		if self.clock:
-			self.clock.tick(60)
+			self.clock.tick(5)
 
 		return True
 

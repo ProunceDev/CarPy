@@ -31,13 +31,13 @@ class MainMenu(App):
 		self.surface.fill(self.background_color)
 
 		for event in events:
-			if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+			if (event.type == pygame.MOUSEBUTTONDOWN or event.type == pygame.FINGERDOWN) and event.button == 1:
 				self.dragging = True
 				self.last_mouse_x = event.pos[0]
 				self.mouse_down_pos = event.pos
 				self.velocity_x = 0  # stop momentum when starting new drag
 
-			elif event.type == pygame.MOUSEBUTTONUP and event.button == 1:
+			elif (event.type == pygame.MOUSEBUTTONUP or event.type == pygame.FINGERUP) and event.button == 1:
 				self.dragging = False
 
 				# Check if it's a click (not a drag)
@@ -48,7 +48,7 @@ class MainMenu(App):
 					if new_app_id is not None:
 						return self.surface, new_app_id
 
-			elif event.type == pygame.MOUSEMOTION and self.dragging:
+			elif (event.type == pygame.MOUSEMOTION or event.type == pygame.FINGERMOTION) and self.dragging:
 				dx = event.pos[0] - self.last_mouse_x
 				self.scroll_x += dx
 				self.velocity_x = dx  # for momentum after release

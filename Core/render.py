@@ -68,6 +68,10 @@ class Render:
 		for event in events:
 			if event.type == pygame.QUIT:
 				return False
+			
+			# if the escape key is pressed, quit the application
+			elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+				return False
 
 			elif (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1) or event.type == pygame.FINGERDOWN:
 				# Normalize FINGERDOWN to pixel coordinates

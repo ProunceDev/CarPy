@@ -29,30 +29,37 @@ class MainMenu(App):
 		Process events and return the surface for the main menu.
 		"""
 		self.surface.fill(self.background_color)
+		width, height = self.surface.get_size()
 
 		for event in events:
-			if (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1) or event.type == pygame.FINGERDOWN:
+			# Normalize FINGER* events into pixel-space pos
+			if event.type in [pygame.FINGERDOWN, pygame.FINGERUP, pygame.FINGERMOTION]:
+				event_pos = (event.x * width, event.y * height)
+			else:
+				event_pos = getattr(event, "pos", None)
+
+			if ((event.type == pygame.MOUSEBUTTONDOWN and event.button == 1) or event.type == pygame.FINGERDOWN):
 				self.dragging = True
-				self.last_mouse_x = event.pos[0]
-				self.mouse_down_pos = event.pos
+				self.last_mouse_x = event_pos[0]
+				self.mouse_down_pos = event_pos
 				self.velocity_x = 0  # stop momentum when starting new drag
 
-			elif (event.type == pygame.MOUSEBUTTONUP and event.button == 1) or event.type == pygame.FINGERUP:
+			elif ((event.type == pygame.MOUSEBUTTONUP and event.button == 1) or event.type == pygame.FINGERUP):
 				self.dragging = False
 
-				# Check if it's a click (not a drag)
-				dx = abs(event.pos[0] - self.mouse_down_pos[0])
-				dy = abs(event.pos[1] - self.mouse_down_pos[1])
+				dx = abs(event_pos[0] - self.mouse_down_pos[0])
+				dy = abs(event_pos[1] - self.mouse_down_pos[1])
 				if dx < self.drag_threshold and dy < self.drag_threshold:
-					new_app_id = self.check_click(event.pos)
+					new_app_id = self.check_click(event_pos)
 					if new_app_id is not None:
 						return self.surface, new_app_id
 
-			elif (event.type == pygame.MOUSEMOTION or event.type == pygame.FINGERMOTION) and self.dragging:
-				dx = event.pos[0] - self.last_mouse_x
+			elif ((event.type == pygame.MOUSEMOTION or event.type == pygame.FINGERMOTION) and self.dragging):
+				dx = event_pos[0] - self.last_mouse_x
 				self.scroll_x += dx
 				self.velocity_x = dx  # for momentum after release
-				self.last_mouse_x = event.pos[0]
+				self.last_mouse_x = event_pos[0]
+
 
 		# Apply momentum when not dragging
 		if not self.dragging:

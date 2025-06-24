@@ -68,18 +68,29 @@ class Render:
 		for event in events:
 			if event.type == pygame.QUIT:
 				return False
+
 			elif (event.type == pygame.MOUSEBUTTONDOWN and event.button == 1) or event.type == pygame.FINGERDOWN:
+				# Normalize FINGERDOWN to pixel coordinates
+				if event.type == pygame.FINGERDOWN:
+					event_pos = (
+						event.x * self.width,
+						event.y * self.height
+					)
+				else:
+					event_pos = event.pos
+
 				if self.active_app_id != "main_menu":
-					# Updated back button rect (matches new size and position)
+					# Back button rectangle
 					button_width, button_height = 100, 40
 					padding = 10
 					x = self.width - button_width - padding
 					y = padding
 					back_button_rect = pygame.Rect(x, y, button_width, button_height)
-					
-					if back_button_rect.collidepoint(event.pos):
+
+					if back_button_rect.collidepoint(event_pos):
 						self.active_app_id = "main_menu"
 						break
+
 
 			
 			# draw on the screen the event type		

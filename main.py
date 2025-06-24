@@ -11,7 +11,7 @@ from Core.mainmenu import MainMenu
 from Apps.backup_camera import Backup_Camera
 
 # Touchscreen config - adjust device and screen size if needed
-TOUCH_DEV = '/dev/input/event5'
+TOUCH_DEV = '/dev/input/event9'
 SCREEN_WIDTH = 800
 SCREEN_HEIGHT = 480
 
@@ -22,28 +22,38 @@ def clamp(n, smallest, largest):
 # State variables for touch position and touch status
 abs_x = 0
 abs_y = 0
+prev_x = 0
+prev_y = 0
 touch_down = False
 
 # Create uinput device to emit mouse events
 ui = UInput()
 
 async def input_loop():
-    global abs_x, abs_y, touch_down
+    global abs_x, abs_y, prev_x, prev_y, touch_down
     device = InputDevice(TOUCH_DEV)
     print(f"Listening on {TOUCH_DEV} for touch input...")
 
     async for event in device.async_read_loop():
+        delta_x = 0
+        delta_y = 0
+
         if event.type == ecodes.EV_ABS:
             if event.code == ecodes.ABS_X:
-                abs_x = clamp(event.value, 0, SCREEN_WIDTH)
+                new_x = clamp(event.value, 0, SCREEN_WIDTH)
+                delta_x = new_x - prev_x
+                prev_x = new_x
+                abs_x = new_x
             elif event.code == ecodes.ABS_Y:
-                abs_y = clamp(event.value, 0, SCREEN_HEIGHT)
+                new_y = clamp(event.value, 0, SCREEN_HEIGHT)
+                delta_y = new_y - prev_y
+                prev_y = new_y
+                abs_y = new_y
 
-            # If touch is down, send relative movement based on deltas
-            if touch_down:
-                # For simplicity send absolute coords as relative movements (can improve)
-                ui.write(ecodes.EV_REL, ecodes.REL_X, abs_x)
-                ui.write(ecodes.EV_REL, ecodes.REL_Y, abs_y)
+            # Send relative movement only if touch is down and movement happened
+            if touch_down and (delta_x != 0 or delta_y != 0):
+                ui.write(ecodes.EV_REL, ecodes.REL_X, delta_x)
+                ui.write(ecodes.EV_REL, ecodes.REL_Y, delta_y)
                 ui.syn()
 
         elif event.type == ecodes.EV_KEY and event.code == ecodes.BTN_TOUCH:

@@ -17,7 +17,7 @@ class Render:
 		pygame.display.set_caption(self.title)
 		if self.is_raspberry_pi():
 			self.screen = pygame.display.set_mode((self.width, self.height), pygame.FULLSCREEN)
-			pygame.mouse.set_visible(False)
+			#pygame.mouse.set_visible(False)
 		else:
 			self.screen = pygame.display.set_mode((self.width, self.height))
 

@@ -1,3 +1,9 @@
+import os
+os.putenv('SDL_VIDEODRIVER', 'fbcon')  # Use framebuffer console
+os.putenv('SDL_FBDEV', '/dev/fb0')     # Default framebuffer device
+os.putenv('SDL_MOUSEDRV', 'TSLIB')     # Optional if using TSLib
+os.putenv('SDL_MOUSEDEV', '/devices/platform/soc/fe205000.i2c/i2c-22/i2c-10/10-0038/input/input0')  # Replace with your touchscreen input
+
 from Core.render import Render
 from Core.mainmenu import MainMenu
 from Apps.backup_camera import Backup_Camera

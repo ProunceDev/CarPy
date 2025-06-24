@@ -1,7 +1,6 @@
 from Core.app import *
 from Core.constructs import MenuItem
 import pygame
-import time
 
 class MainMenu(App):
 	def __init__(self, width=800, height=480):
